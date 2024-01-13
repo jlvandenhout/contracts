@@ -1,4 +1,7 @@
 {
   "name": "storage-test",
-  "packageManager": "yarn@4.0.2"
+  "packageManager": "yarn@4.0.2",
+  "dependencies": {
+    "hardhat": "^2.19.4"
+  }
 }
