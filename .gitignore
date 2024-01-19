@@ -1,3 +1,4 @@
+# Yarn
 .yarn/*
 !.yarn/patches
 !.yarn/plugins
@@ -5,3 +6,7 @@
 !.yarn/sdks
 !.yarn/versions
 node_modules
+
+# Generated
+artifacts
+cache

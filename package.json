@@ -1,5 +1,9 @@
 {
   "name": "storage-test",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "go test ./test"
+  },
   "packageManager": "yarn@4.0.2",
   "dependencies": {
     "hardhat": "^2.19.4"
