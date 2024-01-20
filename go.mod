@@ -8,7 +8,6 @@ replace (
 )
 
 require (
-	github.com/ethereum/go-ethereum v1.13.4
 	github.com/iotaledger/wasp v1.0.1-rc.15.0.20240109010352-69400e583de9
 	github.com/stretchr/testify v1.8.4
 )
@@ -35,6 +34,7 @@ require (
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/eclipse/paho.mqtt.golang v1.4.3 // indirect
 	github.com/ethereum/c-kzg-4844 v0.3.1 // indirect
+	github.com/ethereum/go-ethereum v1.13.4 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/gballet/go-libpcsclite v0.0.0-20191108122812-4678299bea08 // indirect
 	github.com/getsentry/sentry-go v0.23.0 // indirect
