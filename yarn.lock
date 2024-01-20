@@ -1486,6 +1486,14 @@ __metadata:
   languageName: node
   linkType: hard
 
+"contracts@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "contracts@workspace:."
+  dependencies:
+    hardhat: "npm:^2.19.4"
+  languageName: unknown
+  linkType: soft
+
 "cookie@npm:^0.4.1":
   version: 0.4.2
   resolution: "cookie@npm:0.4.2"
@@ -3359,14 +3367,6 @@ __metadata:
   checksum: 34378b207a1620a24804ce8b5d230fea0c279f00b18a7209646d5d47e419d1cc23e7cbf33a25a1e51ac38973dc2ac2e1e9c647a8e481ef365f77668d72becfd0
   languageName: node
   linkType: hard
-
-"storage-test@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "storage-test@workspace:."
-  dependencies:
-    hardhat: "npm:^2.19.4"
-  languageName: unknown
-  linkType: soft
 
 "string-width-cjs@npm:string-width@^4.2.0, string-width@npm:^4.1.0, string-width@npm:^4.2.0":
   version: 4.2.3

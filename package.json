@@ -1,5 +1,5 @@
 {
-  "name": "storage-test",
+  "name": "contracts",
   "scripts": {
     "compile": "hardhat compile",
     "test": "go test ./test"

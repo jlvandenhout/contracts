@@ -1,6 +1,6 @@
 package test
 
-import "jlvandenhout/storage-test/artifacts"
+import "jlvandenhout/contracts/artifacts"
 
 var (
 	Storage = NewContractFromArtifact(artifacts.Storage)

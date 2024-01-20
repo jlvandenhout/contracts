@@ -1,4 +1,4 @@
-module jlvandenhout/storage-test
+module jlvandenhout/contracts
 
 go 1.21.5
 
