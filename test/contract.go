@@ -1,7 +1,6 @@
 package test
 
 import (
-	_ "embed"
 	"encoding/json"
 	"log"
 	"strings"
