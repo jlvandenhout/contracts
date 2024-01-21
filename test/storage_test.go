@@ -1,11 +1,10 @@
 package test
 
 import (
-	"math/big"
 	"testing"
 
 	"github.com/iotaledger/wasp/packages/solo"
-	"github.com/stretchr/testify/require"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestStorage(t *testing.T) {
@@ -14,10 +13,16 @@ func TestStorage(t *testing.T) {
 	creator, _ := chain.NewEthereumAccountWithL2Funds()
 
 	// deploy solidity `storage` contract, with 42
-	chain.DeployEVMContract(creator, Storage.Abi, Storage.Bytecode, big.NewInt(0), uint32(42))
+	contract := Storage.Deploy(creator, chain, uint32(42))
 
 	// call EVM contract's `retrieve` view, get 42
-	res, err := chain.CallView("Storage", "retrieve")
-	require.NoError(t, err)
-	t.Log(res)
+	result := contract.CallView(nil, "retrieve", nil)
+	assert.Equal(t, uint32(42), result[0])
+
+	// call EVM contract's `store`, set 20
+	contract.Call(nil, "store", nil, uint32(20))
+
+	// call EVM contract's `retrieve` view, get 20
+	result = contract.CallView(nil, "retrieve", nil)
+	assert.Equal(t, uint32(20), result[0])
 }
