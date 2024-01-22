@@ -1,19 +1,24 @@
 package test
 
 import (
+	"math/big"
 	"testing"
 
+	"github.com/iotaledger/wasp/packages/hashing"
 	"github.com/iotaledger/wasp/packages/solo"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestEntropy(t *testing.T) {
 	env := solo.New(t)
 	chain := env.NewChain()
-	creator, _ := chain.NewEthereumAccountWithL2Funds()
+	contract := Entropy.Deploy(chain, nil, big.NewInt(0))
 
-	// deploy solidity `entropy` contract
-	contract := Entropy.Deploy(creator, chain)
+	receipt, err := contract.Call(nil, "emitEntropy", nil)
+	require.NoError(t, err)
 
-	// call EVM contract's `emitEntropy`
-	contract.Call(nil, "emitEntropy", nil)
+	result, err := contract.EventFromReceipt("EntropyEvent", receipt)
+	require.NoError(t, err)
+	assert.NotEqualValues(t, result[0], hashing.NilHash)
 }

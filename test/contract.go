@@ -3,8 +3,10 @@ package test
 import (
 	"crypto/ecdsa"
 	"encoding/json"
+	"fmt"
 	"log"
 	"math/big"
+	"slices"
 	"strings"
 
 	"github.com/ethereum/go-ethereum"
@@ -13,7 +15,6 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/iotaledger/wasp/packages/solo"
-	"github.com/stretchr/testify/require"
 )
 
 type Contract struct {
@@ -52,8 +53,12 @@ func (contract *Contract) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (contract *Contract) Deploy(creator *ecdsa.PrivateKey, chain *solo.Chain, args ...interface{}) ContractInstance {
-	address, abi := chain.DeployEVMContract(creator, contract.Abi, contract.Bytecode, big.NewInt(0), args...)
+func (contract *Contract) Deploy(chain *solo.Chain, creator *ecdsa.PrivateKey, value *big.Int, args ...interface{}) ContractInstance {
+	if creator == nil {
+		creator, _ = chain.NewEthereumAccountWithL2Funds()
+	}
+
+	address, abi := chain.DeployEVMContract(creator, contract.Abi, contract.Bytecode, value, args...)
 	return ContractInstance{Abi: abi, Address: address, Chain: chain, Creator: creator}
 }
 
@@ -64,9 +69,11 @@ type ContractInstance struct {
 	Creator *ecdsa.PrivateKey
 }
 
-func (instance *ContractInstance) CallView(caller *ecdsa.PrivateKey, function string, value *big.Int, args ...interface{}) []interface{} {
+func (instance *ContractInstance) CallView(caller *ecdsa.PrivateKey, function string, value *big.Int, args ...interface{}) ([]interface{}, error) {
 	data, err := instance.Abi.Pack(function, args...)
-	require.NoError(instance.Chain.Env.T, err)
+	if err != nil {
+		return nil, err
+	}
 
 	callMsg := ethereum.CallMsg{
 		To:    &instance.Address,
@@ -81,17 +88,23 @@ func (instance *ContractInstance) CallView(caller *ecdsa.PrivateKey, function st
 	}
 
 	ret, err := instance.Chain.EVM().CallContract(callMsg, nil)
-	require.NoError(instance.Chain.Env.T, err)
+	if err != nil {
+		return nil, err
+	}
 
 	result, err := instance.Abi.Unpack(function, ret)
-	require.NoError(instance.Chain.Env.T, err)
+	if err != nil {
+		return nil, err
+	}
 
-	return result
+	return result, nil
 }
 
-func (instance *ContractInstance) Call(caller *ecdsa.PrivateKey, function string, value *big.Int, args ...interface{}) {
+func (instance *ContractInstance) Call(caller *ecdsa.PrivateKey, function string, value *big.Int, args ...interface{}) (*types.Receipt, error) {
 	data, err := instance.Abi.Pack(function, args...)
-	require.NoError(instance.Chain.Env.T, err)
+	if err != nil {
+		return nil, err
+	}
 
 	callMsg := ethereum.CallMsg{
 		To:       &instance.Address,
@@ -110,10 +123,14 @@ func (instance *ContractInstance) Call(caller *ecdsa.PrivateKey, function string
 	callMsg.From = crypto.PubkeyToAddress(signer.PublicKey)
 
 	gas, err := instance.Chain.EVM().EstimateGas(callMsg, nil)
-	require.NoError(instance.Chain.Env.T, err)
+	if err != nil {
+		return nil, err
+	}
 
 	nonce, err := instance.Chain.EVM().TransactionCount(callMsg.From, nil)
-	require.NoError(instance.Chain.Env.T, err)
+	if err != nil {
+		return nil, err
+	}
 
 	transaction, err := types.SignNewTx(signer, types.NewEIP155Signer(big.NewInt(int64(instance.Chain.EVM().ChainID()))), &types.LegacyTx{
 		Nonce:    nonce,
@@ -123,8 +140,28 @@ func (instance *ContractInstance) Call(caller *ecdsa.PrivateKey, function string
 		Value:    value,
 		Data:     callMsg.Data,
 	})
-	require.NoError(instance.Chain.Env.T, err)
+	if err != nil {
+		return nil, err
+	}
 
 	err = instance.Chain.EVM().SendTransaction(transaction)
-	require.NoError(instance.Chain.Env.T, err)
+	if err != nil {
+		return nil, err
+	}
+
+	receipt := instance.Chain.EVM().TransactionReceipt(transaction.Hash())
+
+	return receipt, nil
+}
+
+func (instance *ContractInstance) EventFromReceipt(event string, receipt *types.Receipt) ([]interface{}, error) {
+	topic := instance.Abi.Events[event].ID
+
+	for _, log := range receipt.Logs {
+		if slices.Contains(log.Topics, topic) {
+			return instance.Abi.Unpack(event, log.Data)
+		}
+	}
+
+	return nil, fmt.Errorf("event with name %v not found", event)
 }
