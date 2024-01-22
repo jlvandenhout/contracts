@@ -460,6 +460,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@iota/iscmagic@npm:^1.0.1-rc.17":
+  version: 1.0.1-rc.17
+  resolution: "@iota/iscmagic@npm:1.0.1-rc.17"
+  checksum: 0638f66ac64026548d7a9cf4557e07ab79bc104ecd4278e7df156af8a6dc4bdc12174d9ae7f6db19b0d0348e9a8a04cbd82348a472d8d611d1976743df275b6f
+  languageName: node
+  linkType: hard
+
 "@isaacs/cliui@npm:^8.0.2":
   version: 8.0.2
   resolution: "@isaacs/cliui@npm:8.0.2"
@@ -1490,6 +1497,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "contracts@workspace:."
   dependencies:
+    "@iota/iscmagic": "npm:^1.0.1-rc.17"
     hardhat: "npm:^2.19.4"
   languageName: unknown
   linkType: soft

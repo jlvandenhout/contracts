@@ -6,6 +6,7 @@
   },
   "packageManager": "yarn@4.0.2",
   "dependencies": {
+    "@iota/iscmagic": "^1.0.1-rc.17",
     "hardhat": "^2.19.4"
   }
 }
