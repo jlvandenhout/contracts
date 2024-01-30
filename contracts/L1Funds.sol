@@ -2,10 +2,14 @@
 
 pragma solidity ^0.8.0;
 
-contract L1Funds {
-  function deposit(assets) {
-    msg.caller
-  }
+import "@iota/iscmagic/ISC.sol";
 
-  function withdraw(l1address)
+contract L1Funds {
+  event BaseTokenEvent(uint64 amount);
+  event NFTEvent(NFTID id);
+
+  function deposit(ISCAssets memory assets) public {
+    emit BaseTokenEvent(assets.baseTokens);
+    emit NFTEvent(assets.nfts[0]);
+  }
 }

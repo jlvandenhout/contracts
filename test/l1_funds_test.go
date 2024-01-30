@@ -1,6 +1,7 @@
 package test
 
 import (
+	"fmt"
 	"math/big"
 	"testing"
 
@@ -23,7 +24,18 @@ func TestL1Funds(t *testing.T) {
 	agentId := isc.NewEthereumAddressAgentID(chain.ChainID, L2Address)
 
 	assets := isc.NewAssets(1000, nil, nft.ID)
-	chain.SendFromL1ToL2Account(0, assets, agentId, L1Keys)
+	chain.SendFromL1ToL2Account(2600, assets, agentId, L1Keys)
 
-	contract.Call(L2Keys, "deposit", big.NewInt(0), assets)
+	receipt, err := contract.Call(L2Keys, "deposit", big.NewInt(0), assets)
+	require.NoError(t, err)
+
+	result, err := contract.EventFromReceipt("BaseTokenEvent", receipt)
+	require.NoError(t, err)
+
+	fmt.Println(result)
+
+	result, err = contract.EventFromReceipt("NFTEvent", receipt)
+	require.NoError(t, err)
+
+	fmt.Println(result)
 }
