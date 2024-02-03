@@ -10,10 +10,15 @@ contract L1Funds {
   function send(L1Address memory receiver, ISCAssets memory allowance) public {
       ISC.sandbox.allow(address(this), allowance);
       
+      ISCAssets memory assets;
+      assets.baseTokens = allowance.baseTokens - 500;
+      assets.nativeTokens = allowance.nativeTokens;
+      assets.nfts = allowance.nfts;
+
       ISCSendMetadata memory metadata;
       ISCSendOptions memory options;
-      ISC.sandbox.send(receiver, allowance, true, metadata, options);
+      ISC.sandbox.send(receiver, assets, true, metadata, options);
 
-      emit Send(msg.sender, receiver, allowance);
+      emit Send(msg.sender, receiver, assets);
   }
 }

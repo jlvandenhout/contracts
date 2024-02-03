@@ -17,11 +17,15 @@ func TestL1Funds(t *testing.T) {
 	contract := L1Funds.Deploy(chain, nil, big.NewInt(0))
 
 	// Sender account
-	senderKeys, senderAddress := chain.NewEthereumAccountWithL2Funds()
+	senderKeys, senderAddress := solo.NewEthereumAccount()
 	senderAgentID := isc.NewEthereumAddressAgentID(chain.ChainID, senderAddress)
 
 	// Receiver account
 	_, receiverAddress := env.NewKeyPairWithFunds()
+
+	// Base tokens
+	err := chain.SendFromL1ToL2AccountBaseTokens(500, 2000000, senderAgentID, chain.OriginatorPrivateKey)
+	require.NoError(t, err)
 
 	// Native tokens
 	maxSupply := big.NewInt(10)
@@ -43,6 +47,7 @@ func TestL1Funds(t *testing.T) {
 
 	// Send assets to receiver
 	senderAssets := chain.L2Assets(senderAgentID)
+	t.Log(senderAssets)
 
 	wrappedReceiverAddress := iscmagic.WrapL1Address(receiverAddress)
 	wrappedSenderAssets := iscmagic.WrapISCAssets(senderAssets)
