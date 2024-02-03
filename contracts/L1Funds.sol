@@ -5,11 +5,15 @@ pragma solidity ^0.8.0;
 import "@iota/iscmagic/ISC.sol";
 
 contract L1Funds {
-  event BaseTokenEvent(uint64 amount);
-  event NFTEvent(NFTID id);
+  event Send(address sender, L1Address receiver, ISCAssets assets);
 
-  function deposit(ISCAssets memory assets) public {
-    emit BaseTokenEvent(assets.baseTokens);
-    emit NFTEvent(assets.nfts[0]);
+  function send(L1Address memory receiver, ISCAssets memory allowance) public {
+      ISC.sandbox.allow(address(this), allowance);
+      
+      ISCSendMetadata memory metadata;
+      ISCSendOptions memory options;
+      ISC.sandbox.send(receiver, allowance, true, metadata, options);
+
+      emit Send(msg.sender, receiver, allowance);
   }
 }
