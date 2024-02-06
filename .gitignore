@@ -10,3 +10,15 @@ node_modules
 # Generated
 artifacts
 cache
+
+# Hardhat
+/cache
+/artifacts
+
+# TypeChain
+/typechain
+/typechain-types
+
+# Solidity coverage
+/coverage
+/coverage.json
