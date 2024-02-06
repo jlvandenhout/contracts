@@ -2,7 +2,7 @@
   "name": "contracts",
   "scripts": {
     "compile": "hardhat compile",
-    "test": "go test ./test"
+    "test": "hardhat test"
   },
   "packageManager": "yarn@4.0.2",
   "dependencies": {
