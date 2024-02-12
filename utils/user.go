@@ -27,11 +27,20 @@ type User struct {
 	L2
 }
 
-func NewUser(chain *solo.Chain, baseTokens uint64) User {
+type BaseTokens struct {
+	L1 uint64
+	L2 uint64
+}
+
+func NewUser(chain *solo.Chain, baseTokens BaseTokens) User {
 	l1Keys, l1Address := chain.Env.NewKeyPair()
 	l1AgentID := isc.NewAddressAgentID(l1Address)
 
-	l2Keys, l2Address := chain.NewEthereumAccountWithL2Funds(baseTokens)
+	if baseTokens.L1 > 0 {
+		chain.Env.GetFundsFromFaucet(l1Address, baseTokens.L1)
+	}
+
+	l2Keys, l2Address := chain.NewEthereumAccountWithL2Funds(baseTokens.L2)
 	l2AgentID := isc.NewEthereumAddressAgentID(chain.ChainID, l2Address)
 
 	user := User{
