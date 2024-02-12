@@ -9,7 +9,8 @@ replace (
 
 require (
 	github.com/ethereum/go-ethereum v1.13.4
-	github.com/iotaledger/wasp v1.0.1-rc.15.0.20240109010352-69400e583de9
+	github.com/iotaledger/iota.go/v3 v3.0.0-rc.3
+	github.com/iotaledger/wasp v1.0.2-alpha.4.0.20240207144209-62fed0132b84
 )
 
 require (
@@ -62,7 +63,6 @@ require (
 	github.com/iotaledger/hive.go/serializer/v2 v2.0.0-rc.1.0.20231106113411-94ac829adbb2 // indirect
 	github.com/iotaledger/hive.go/stringify v0.0.0-20231106113411-94ac829adbb2 // indirect
 	github.com/iotaledger/iota.go v1.0.0 // indirect
-	github.com/iotaledger/iota.go/v3 v3.0.0-rc.3 // indirect
 	github.com/jackpal/go-nat-pmp v1.0.2 // indirect
 	github.com/klauspost/compress v1.16.7 // indirect
 	github.com/kr/pretty v0.3.1 // indirect
@@ -76,6 +76,8 @@ require (
 	github.com/mmcloughlin/addchain v0.4.0 // indirect
 	github.com/mr-tron/base58 v1.2.0 // indirect
 	github.com/olekukonko/tablewriter v0.0.5 // indirect
+	github.com/onsi/ginkgo v1.16.5 // indirect
+	github.com/onsi/gomega v1.27.10 // indirect
 	github.com/pasztorpisti/qs v0.0.0-20171216220353-8d6c33ee906c // indirect
 	github.com/pelletier/go-toml/v2 v2.1.0 // indirect
 	github.com/petermattis/goid v0.0.0-20230904192822-1876fd5063bc // indirect
@@ -109,11 +111,11 @@ require (
 	go.uber.org/atomic v1.11.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.26.0 // indirect
-	golang.org/x/crypto v0.17.0 // indirect
-	golang.org/x/exp v0.0.0-20231226003508-02704c960a9b // indirect
-	golang.org/x/net v0.19.0 // indirect
-	golang.org/x/sync v0.5.0 // indirect
-	golang.org/x/sys v0.15.0 // indirect
+	golang.org/x/crypto v0.18.0 // indirect
+	golang.org/x/exp v0.0.0-20240112132812-db7319d0e0e3 // indirect
+	golang.org/x/net v0.20.0 // indirect
+	golang.org/x/sync v0.6.0 // indirect
+	golang.org/x/sys v0.16.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20230822172742-b8732ec3820d // indirect
 	google.golang.org/grpc v1.57.0 // indirect

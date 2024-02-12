@@ -3,7 +3,7 @@
   "scripts": {
     "compile": "hardhat compile",
     "test:sandbox": "hardhat test",
-    "test:solo": "go test ./contracts"
+    "test:solo": "go test -v ./contracts"
   },
   "packageManager": "yarn@4.1.0",
   "dependencies": {
