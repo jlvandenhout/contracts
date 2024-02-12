@@ -16,7 +16,7 @@ type L1 struct {
 	Keys    *cryptolib.KeyPair
 }
 
-type L2 struct {
+type EVM struct {
 	AgentID *isc.EthereumAddressAgentID
 	Address common.Address
 	Keys    *ecdsa.PrivateKey
@@ -24,12 +24,12 @@ type L2 struct {
 
 type User struct {
 	L1
-	L2
+	EVM
 }
 
 type BaseTokens struct {
-	L1 uint64
-	L2 uint64
+	L1  uint64
+	EVM uint64
 }
 
 func NewUser(chain *solo.Chain, baseTokens BaseTokens) User {
@@ -40,19 +40,19 @@ func NewUser(chain *solo.Chain, baseTokens BaseTokens) User {
 		chain.Env.GetFundsFromFaucet(l1Address, baseTokens.L1)
 	}
 
-	l2Keys, l2Address := chain.NewEthereumAccountWithL2Funds(baseTokens.L2)
-	l2AgentID := isc.NewEthereumAddressAgentID(chain.ChainID, l2Address)
+	evmKeys, evmAddress := chain.NewEthereumAccountWithL2Funds(baseTokens.EVM)
+	evmAgentID := isc.NewEthereumAddressAgentID(chain.ChainID, evmAddress)
 
 	user := User{
-		L1: L1{
+		L1{
 			AgentID: l1AgentID,
 			Address: l1Address,
 			Keys:    l1Keys,
 		},
-		L2: L2{
-			AgentID: l2AgentID,
-			Address: l2Address,
-			Keys:    l2Keys,
+		EVM{
+			AgentID: evmAgentID,
+			Address: evmAddress,
+			Keys:    evmKeys,
 		},
 	}
 
