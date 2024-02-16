@@ -34,7 +34,7 @@ func NewContractFromArtifact(data []byte) Contract {
 
 func (contract *Contract) UnmarshalJSON(data []byte) error {
 	var fields struct {
-		abi.ABI
+		ABI      abi.ABI
 		Bytecode string
 	}
 
@@ -45,12 +45,11 @@ func (contract *Contract) UnmarshalJSON(data []byte) error {
 
 	contract.ABI = fields.ABI
 	contract.Bytecode = common.FromHex(strings.TrimSpace(fields.Bytecode))
-	fmt.Print(contract)
 	return nil
 }
 
-func (contract *Contract) Deploy(chain *solo.Chain, owner User, value *big.Int, args ...interface{}) (*ContractInstance, *types.Receipt, error) {
-	nonce := chain.Nonce(owner.EVM.AgentID)
+func (contract *Contract) Deploy(chain *solo.Chain, owner EVMAccount, value *big.Int, args ...interface{}) (*ContractInstance, *types.Receipt, error) {
+	nonce := chain.Nonce(owner.AgentID)
 
 	bytecode := contract.Bytecode
 	arguments, err := contract.ABI.Pack("", args...)
@@ -58,12 +57,12 @@ func (contract *Contract) Deploy(chain *solo.Chain, owner User, value *big.Int, 
 		return nil, nil, err
 	}
 
-	data := make([]byte, len(bytecode), len(arguments))
+	data := make([]byte, 0, len(bytecode)+len(arguments))
 	data = append(data, bytecode...)
 	data = append(data, arguments...)
 
 	callMessage := ethereum.CallMsg{
-		From:  owner.EVM.Address,
+		From:  owner.Address,
 		To:    nil, // contract creation
 		Value: value,
 		Data:  data,
@@ -73,19 +72,22 @@ func (contract *Contract) Deploy(chain *solo.Chain, owner User, value *big.Int, 
 	if err != nil {
 		return nil, nil, err
 	}
-	signer := types.LatestSignerForChainID(big.NewInt(int64(chain.EVM().ChainID())))
+
+	signer, err := chain.EVM().Signer()
+	if err != nil {
+		return nil, nil, err
+	}
 
 	transaction, err := types.SignTx(
-		types.NewTransaction(
+		types.NewContractCreation(
 			nonce,
-			*callMessage.To,
 			callMessage.Value,
 			gas,
 			chain.EVM().GasPrice(),
 			data,
 		),
 		signer,
-		owner.EVM.Keys,
+		owner.Keys,
 	)
 	if err != nil {
 		return nil, nil, err
@@ -98,7 +100,7 @@ func (contract *Contract) Deploy(chain *solo.Chain, owner User, value *big.Int, 
 
 	receipt := chain.EVM().TransactionReceipt(transaction.Hash())
 
-	address := crypto.CreateAddress(owner.EVM.Address, nonce)
+	address := crypto.CreateAddress(owner.Address, nonce)
 
 	agentID := isc.NewEthereumAddressAgentID(chain.ID(), address)
 	return &ContractInstance{ABI: contract.ABI, Address: address, AgentID: agentID, Chain: chain}, receipt, nil
@@ -131,14 +133,14 @@ type ContractInstance struct {
 	Chain   *solo.Chain
 }
 
-func (instance *ContractInstance) CallView(caller User, function string, value *big.Int, args ...interface{}) ([]byte, error) {
+func (instance *ContractInstance) CallView(caller EVMAccount, function string, value *big.Int, args ...interface{}) ([]byte, error) {
 	data, err := instance.ABI.Pack(function, args...)
 	if err != nil {
 		return nil, err
 	}
 
 	callMsg := ethereum.CallMsg{
-		From:  caller.EVM.Address,
+		From:  caller.Address,
 		To:    &instance.Address,
 		Data:  data,
 		Value: value,
@@ -152,14 +154,14 @@ func (instance *ContractInstance) CallView(caller User, function string, value *
 	return ret, nil
 }
 
-func (instance *ContractInstance) EstimateGas(caller User, function string, value *big.Int, args ...interface{}) (uint64, error) {
+func (instance *ContractInstance) EstimateGas(caller EVMAccount, function string, value *big.Int, args ...interface{}) (uint64, error) {
 	data, err := instance.ABI.Pack(function, args...)
 	if err != nil {
 		return 0, err
 	}
 
 	callMsg := ethereum.CallMsg{
-		From:     caller.EVM.Address,
+		From:     caller.Address,
 		To:       &instance.Address,
 		Data:     data,
 		Value:    value,
@@ -174,14 +176,14 @@ func (instance *ContractInstance) EstimateGas(caller User, function string, valu
 	return gas, nil
 }
 
-func (instance *ContractInstance) Call(caller User, function string, value *big.Int, args ...interface{}) (*types.Receipt, error) {
+func (instance *ContractInstance) Call(caller EVMAccount, function string, value *big.Int, args ...interface{}) (*types.Receipt, error) {
 	data, err := instance.ABI.Pack(function, args...)
 	if err != nil {
 		return nil, err
 	}
 
 	callMsg := ethereum.CallMsg{
-		From:     caller.EVM.Address,
+		From:     caller.Address,
 		To:       &instance.Address,
 		Data:     data,
 		Value:    value,
@@ -198,7 +200,12 @@ func (instance *ContractInstance) Call(caller User, function string, value *big.
 		return nil, err
 	}
 
-	transaction, err := types.SignNewTx(caller.EVM.Keys, types.NewEIP155Signer(big.NewInt(int64(instance.Chain.EVM().ChainID()))), &types.LegacyTx{
+	signer, err := instance.Chain.EVM().Signer()
+	if err != nil {
+		return nil, err
+	}
+
+	transaction, err := types.SignNewTx(caller.Keys, signer, &types.LegacyTx{
 		Nonce:    nonce,
 		Gas:      gas,
 		GasPrice: callMsg.GasPrice,
