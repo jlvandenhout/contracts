@@ -9,5 +9,5 @@ import (
 var ()
 
 var (
-	Sandbox = utils.CoreContract{Abi: iscmagic.SandboxABI, Address: iscmagic.Address}
+	Sandbox = utils.NewCoreContractFromABIAndAddress(iscmagic.SandboxABI, iscmagic.Address)
 )
