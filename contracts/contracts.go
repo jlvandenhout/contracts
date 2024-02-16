@@ -9,6 +9,7 @@ import (
 
 var (
 	L1Assets = utils.NewContractFromArtifact(artifacts.L1Assets)
+	Random   = utils.NewContractFromArtifact(artifacts.Random)
 )
 
 var (
