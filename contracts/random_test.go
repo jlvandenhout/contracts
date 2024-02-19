@@ -86,3 +86,16 @@ func TestRandomBytesLength(t *testing.T) {
 		require.Len(t, value, int(length))
 	}
 }
+
+func TestRandomNotRepeating(t *testing.T) {
+	contract, user := Setup(t)
+
+	receipt, err := contract.Call(user, "getBytes", big.NewInt(0), big.NewInt(64))
+	require.NoError(t, err)
+
+	var value []byte
+	err = contract.EventFromReceipt("Bytes", receipt, &value)
+	require.NoError(t, err)
+
+	require.NotEqual(t, value[:32], value[32:])
+}

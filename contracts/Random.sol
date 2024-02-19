@@ -25,8 +25,9 @@ contract Random {
 
     function getBytes(uint n) public returns (bytes memory) {
         bytes memory value = new bytes(n);
+        bytes32 entropy = ISC.sandbox.getEntropy();
         for (uint i = 0; i < n; i += 32) {
-            bytes32 entropy = ISC.sandbox.getEntropy();
+            entropy = sha256(abi.encode(entropy));
             for (uint j = 0; j < 32 && i + j < n; j++) {
                 value[i + j] = entropy[j];
             }
