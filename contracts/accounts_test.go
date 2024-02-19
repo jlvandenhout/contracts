@@ -53,11 +53,9 @@ func TestAccounts(t *testing.T) {
 	assetsToWithdraw.NativeTokens = assets.NativeTokens
 	assetsToWithdraw.NFTs = assets.NFTs
 
-	// wrappedL2Assets := iscmagic.WrapISCAssets(chain.L2Assets(sender.AgentID))
 	wrappedL2Assets := iscmagic.WrapISCAssets(assetsToWithdraw)
 	wrappedL1Address := iscmagic.WrapL1Address(receiver.Address)
 
-	// Allow the contract to take the assets
 	wrappedMetadata := iscmagic.ISCSendMetadata{}
 	wrappedOptions := iscmagic.ISCSendOptions{}
 
