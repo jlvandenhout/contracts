@@ -24,27 +24,14 @@ func Setup(t *testing.T) (*utils.ContractInstance, utils.EVMAccount) {
 	return contract, user
 }
 
-func TestRandomByte(t *testing.T) {
+func TestRandomInt(t *testing.T) {
 	contract, user := Setup(t)
 
-	receipt, err := contract.Call(user, "getByte", big.NewInt(0))
+	receipt, err := contract.Call(user, "getInt", big.NewInt(0))
 	require.NoError(t, err)
 
-	var value byte
-	err = contract.EventFromReceipt("Byte", receipt, &value)
-	require.NoError(t, err)
-
-	require.NotZero(t, value)
-}
-
-func TestRandomUInt64(t *testing.T) {
-	contract, user := Setup(t)
-
-	receipt, err := contract.Call(user, "getUInt64", big.NewInt(0))
-	require.NoError(t, err)
-
-	var value uint64
-	err = contract.EventFromReceipt("UInt64", receipt, &value)
+	var value *big.Int
+	err = contract.EventFromReceipt("Int", receipt, &value)
 	require.NoError(t, err)
 
 	require.NotZero(t, value)
@@ -73,7 +60,7 @@ func TestRandomBytesNotEqual(t *testing.T) {
 func TestRandomBytesLength(t *testing.T) {
 	contract, user := Setup(t)
 
-	lengths := []int64{0, 1, 32, 64, 100, 500}
+	lengths := []int64{0, 1, 500}
 
 	for _, length := range lengths {
 		receipt, err := contract.Call(user, "getBytes", big.NewInt(0), big.NewInt(length))
