@@ -14,5 +14,6 @@ var (
 )
 
 var (
-	Sandbox = utils.NewCoreContractFromABIAndAddress(iscmagic.SandboxABI, iscmagic.Address)
+	Sandbox  = utils.NewCoreContractFromABIAndAddress(iscmagic.SandboxABI, iscmagic.Address)
+	Accounts = utils.NewCoreContractFromABIAndAddress(iscmagic.AccountsABI, iscmagic.Address)
 )

@@ -20,7 +20,7 @@ func TestL2Balance(t *testing.T) {
 	user := utils.NewL1Account(chain, 10_000_000, 0)
 
 	// Deploy contracts
-	sandbox, err := Sandbox.OnChain(chain)
+	sandbox, err := Accounts.OnChain(chain)
 	require.NoError(t, err)
 
 	contract, _, err := L2Balance.Deploy(chain, owner, big.NewInt(0))
