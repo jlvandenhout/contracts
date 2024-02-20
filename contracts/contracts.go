@@ -8,8 +8,9 @@ import (
 )
 
 var (
-	L1Assets = utils.NewContractFromArtifact(artifacts.L1Assets)
-	Random   = utils.NewContractFromArtifact(artifacts.Random)
+	L1Assets  = utils.NewContractFromArtifact(artifacts.L1Assets)
+	L2Balance = utils.NewContractFromArtifact(artifacts.L2Balance)
+	Random    = utils.NewContractFromArtifact(artifacts.Random)
 )
 
 var (
